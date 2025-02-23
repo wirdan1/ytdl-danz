@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Video atau Audio YouTube</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4, #fbc2eb, #8fd, #a6c1ee, #d4fc79, #96e6a1);
+            background-size: 400% 400%;
+            animation: gradientAnimation 8s infinite alternate;
+            color: #333;
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 90%;
+            margin: 50px auto;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        input, select, button {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+            display: none;
+        }
+
+        .info-box {
+            max-width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.75); /* Transparan */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: left;
+        }
+
+        .info-box h2 {
+            color: #444;
+            text-align: center;
+        }
+
+        .info-box p {
+            font-size: 15px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Download Video atau Audio YouTube</h1>
+        <input type="text" id="youtube-url" placeholder="Masukkan URL YouTube">
+        <select id="format">
+            <option value="mp4">Unduh Video (MP4)</option>
+            <option value="mp3">Unduh Audio (MP3)</option>
+        </select>
+        <button onclick="downloadYouTube()">Dapatkan Link Unduhan</button>
+        <p class="error" id="errorMessage"></p>
+    </div>
+
+    <div class="info-box">
+        <h2>Panduan Pemakaian</h2>
+        <p>✅ Masukkan URL video YouTube yang ingin diunduh.</p>
+        <p>✅ Pilih format (Video MP4 atau Audio MP3).</p>
+        <p>✅ Klik tombol "Dapatkan Link Unduhan".</p>
+        <p>✅ File akan otomatis mulai diunduh.</p>
+    </div>
+
+    <div class="info-box">
+        <h2>Informasi Tentang Web</h2>
+        <p><strong>Alasan Dibuat:</strong> Website ini dibuat untuk mempermudah pengguna dalam mengunduh video atau audio dari YouTube dengan cepat dan gratis.</p>
+        <p><strong>API yang Digunakan:</strong> Web ini menggunakan API dari <a href="https://tools.opslinuxsec.com/ytdl/" target="_blank">OpsLinuxSec YouTube Downloader</a>.</p>
+        <p><strong>Fitur Utama:</strong></p>
+        <ul>
+            <li>✔️ Unduh video dalam format MP4</li>
+            <li>✔️ Unduh audio dalam format MP3</li>
+            <li>✔️ Gratis, cepat, dan mudah digunakan</li>
+            <li>✔️ Tampilan modern dengan background warna-warni</li>
+        </ul>
+    </div>
+
+    <div class="info-box">
+        <h2>Ketentuan Pengguna</h2>
+        <p>✅ Hanya untuk penggunaan pribadi.</p>
+        <p>❌ Dilarang menggunakan layanan ini untuk keperluan ilegal.</p>
+        <p>✅ Pastikan Anda memiliki izin untuk mengunduh konten.</p>
+        <p>❌ Kami tidak menyimpan atau membagikan video yang diunduh.</p>
+    </div>
+
+    <div class="info-box">
+        <h2>Owner</h2>
+        <p>Nama: Danz</p>
+        <p>Email: danz124c@example.com</p>
+        <p>Telepon: <a href="tel:62895323195263">+62 821 7923 0256</a></p>
+    </div>
+
+    <script>
+        function downloadYouTube() {
+            const url = document.getElementById('youtube-url').value.trim();
+            const format = document.getElementById('format').value;
+            const errorMessage = document.getElementById('errorMessage');
+
+            if (!url) {
+                errorMessage.textContent = 'Mohon masukkan URL YouTube!';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            errorMessage.style.display = 'none';
+
+            const apiUrl = `https://tools.opslinuxsec.com/ytdl/download.php?format=${format}&url=${encodeURIComponent(url)}`;
+            window.location.href = apiUrl;
+        }
+    </script>
+
+</body>
+</html>
