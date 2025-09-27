@@ -416,7 +416,7 @@
     </div>
     
     <footer>
-      <p>Y7Maker YouTube Downloader &copy; 2025 - Powered by Danz-dev</p>
+      <p>Y7Maker YouTube Downloader &copy; 2025 - Powered by Hookrest-team</p>
     </footer>
   </div>
 
@@ -541,29 +541,74 @@
 
       if (!url) return;
 
-      let apiUrl = `https://hookrest.my.id/download/yt${type}?url=${encodeURIComponent(url)}`;
+      // Validasi dasar: pastikan URL mengandung youtube.com atau youtu.be
+      if (!url.includes('youtube.com') && !url.includes('youtu.be')) {
+        resTitle.textContent = lang === "id" ? "URL harus berisi 'youtube.com' atau 'youtu.be'!" : "URLには'youtube.com'または'youtu.be'を含める必要があります！";
+        resDuration.textContent = "";
+        resDownload.style.display = "none";
+        resultBox.style.display = "block";
+        return;
+      }
+
+      // Tampilkan loading state
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+      submitBtn.disabled = true;
+      resultBox.style.display = "none";
+
+      // Gunakan proxy CORS
+      const proxyUrl = 'https://api.allorigins.win/raw?url=';
+      let apiUrl;
+      if (type === "mp3") {
+        apiUrl = `https://hookrest.my.id/dowload/ytmp3?url=${encodeURIComponent(url)}&apikey=hookrest`;
+      } else {
+        apiUrl = `https://hookrest.my.id/dowload/ytmp4?url=${encodeURIComponent(url)}&apikey=hookrest`;
+      }
 
       try {
-        const res = await fetch(apiUrl);
+        const res = await fetch(proxyUrl + encodeURIComponent(apiUrl));
+        
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
         const data = await res.json();
 
         if (data.status) {
-          resTitle.textContent = data.result.title;
-          resDuration.textContent = `Durasi: ${data.result.duration}`;
-          resDownload.href = data.result.download;
-          resDownload.textContent = `Download ${data.result.type.toUpperCase()}`;
+          if (type === "mp3") {
+            resTitle.textContent = data.meta.title || "Audio YouTube";
+            resDuration.textContent = `Durasi: ${data.meta.duration ? data.meta.duration.toFixed(2) : 'N/A'} detik | Ukuran: ${data.meta.size || 'N/A'}`;
+            resDownload.href = data.download.url;
+            resDownload.textContent = `Download MP3`;
+          } else {
+            resTitle.textContent = data.download.title || "Video YouTube";
+            resDuration.textContent = `Kualitas: ${data.download.quality || 'N/A'} | MIME: ${data.download.mimeType ? data.download.mimeType.split(';')[0] : 'video/mp4'}`;
+            resDownload.href = data.download.url;
+            resDownload.textContent = `Download MP4`;
+          }
           resultBox.style.display = "block";
         } else {
-          resTitle.textContent = lang === "id" ? "Gagal mengambil data." : "データの取得に失敗しました。";
+          resTitle.textContent = lang === "id" ? 
+            `Error: ${data.message || 'Gagal memproses permintaan'}` : 
+            `エラー: ${data.message || 'リクエストの処理に失敗しました'}`;
           resDuration.textContent = "";
           resDownload.style.display = "none";
           resultBox.style.display = "block";
         }
       } catch (err) {
-        resTitle.textContent = lang === "id" ? "Terjadi kesalahan!" : "エラーが発生しました！";
-        resDuration.textContent = "";
+        console.error('Error detail:', err);
+        resTitle.textContent = lang === "id" ? 
+          "Kesalahan Koneksi!" : 
+          "接続エラー！";
+        resDuration.textContent = lang === "id" ? 
+          "Periksa koneksi internet atau coba lagi nanti" : 
+          "インターネット接続を確認するか、後でもう一度お試しください";
         resDownload.style.display = "none";
         resultBox.style.display = "block";
+      } finally {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
       }
     });
 
@@ -606,7 +651,6 @@
 
     function init() {
       particlesArray = [];
-      // Mengurangi jumlah partikel untuk performa
       let numberOfParticles = Math.min(
         (canvas.height * canvas.width) / 15000, 
         window.innerWidth < 768 ? 30 : 100
@@ -662,17 +706,14 @@
       animate();
     }
 
-    // Inisialisasi
     setupCanvas();
     init();
     animate();
 
-    // Event listeners
     window.addEventListener('resize', function() {
       startAnimation();
     });
 
-    // Hentikan animasi saat tab tidak aktif untuk menghemat resources
     document.addEventListener('visibilitychange', function() {
       if (document.hidden) {
         cancelAnimationFrame(animationId);
